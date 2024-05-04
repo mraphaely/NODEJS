@@ -16,12 +16,18 @@ const PORT = 3333
 * ROUTER -> parâmetros -> GET, PUT, DELETE, PATH
 * QUERY -> /usuarios?param1=valor1&param2=valor2&param3=valor3 -> GET
 */
-
 const usuarios = []
 const server = http.createServer((request, response)=>{
     const {method, url} = request
 //localhost:3333/usuarios
     if(method === 'GET' && url === '/usuarios'){
+    /*
+    1xx -> Informativo
+    2xx -> Sucesso
+    3xx -> Redirecionamento
+    4xx -> Erro do cliente
+    5xx -> Erro do servidor
+    */    
         response.writeHead(200, {'Content-Type':'application/json'})
         response.end(JSON.stringify(usuarios))    
     }
@@ -55,9 +61,10 @@ const server = http.createServer((request, response)=>{
     else if(method === 'GET' &&  url.startsWith('/usuarios/')){
         //http://localhost:3333/usuarios/1
         //Split -> [localhost:3333, usuarios, 1]
+        //         [            0,    1,      2]
         const id = url.split('/')[2]
-        const usuario = usuarios.find((usuario)=>usuario.id == id)
-        if(!user){
+        const usuario = usuarios.find((usuario)=>usuario.id === id)
+        if(!usuarios){
               response.writeHead(404, {"Content-Type":"application/json"})
               response.end(JSON.stringify({message: 'Usuário não encontrado'}))
           return    
