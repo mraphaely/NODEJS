@@ -16,32 +16,36 @@ const server = http.createServer((request, response) => {
 
     else if (method === 'GET' && url === '/participants/count') {
         response.writeHead(200, { 'Content-Type': 'application/json' })
-        response.end(JSON.stringify(participants.length))
+        response.end(JSON.stringify({message: `A quantidade de participantes é: ${participants.length}`}))
     }
     //localhost:3333/participants/count/over18
     else if (method === 'GET' && url === '/participants/count/over18') {
+        const over18 = participants.filter(participant => participant.idade >= 18)
+        // console.log(over18)
         response.writeHead(200, { 'Content-Type': 'application/json' })
-        response.end(JSON.stringify(participants.length))
+        response.end(JSON.stringify({message: `A quantidade de participantes que são maiores é: ${over18.length}`}))
         
     }
     else if (method === 'GET' && url === '/participants/city/most') {
+        const city = participants.map(participant => participant.cidade)
         response.writeHead(200, { 'Content-Type': 'application/json' })
-        response.end(JSON.stringify(participants.length.city))
+        response.end(JSON.stringify(city))
         
     }
 
     else if (method === 'POST' && url === '/participants') {
         let body = ''
-        const novoparticipant = JSON.parse(body)
-        if(novoparticipant.idade < 16){
-            response.writeHead(404, { "Content-Type": "application/json" })
-            response.end(JSON.stringify({ message: "Participante não tem idade o suficiente" }))
-            return
-        }
+        
         request.on('data', (chunk) => {
             body += chunk.toString()
         })
         request.on('end', () => {
+            const novoparticipant = JSON.parse(body)
+            if(novoparticipant.idade < 16){
+                response.writeHead(403, { "Content-Type": "application/json" })
+                response.end(JSON.stringify({ message: "Participante não tem idade o suficiente" }))
+                return
+            }
             novoparticipant.id = participants.length + 1
             participants.push(novoparticipant)
             response.writeHead(201, { "Content-Type": "application/json" })
