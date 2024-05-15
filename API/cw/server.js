@@ -23,7 +23,7 @@ const server = http.createServer((request, response) => {
            return
         }
         //valida senha
-        if(participante.senha !== participante.confirmaSenha){
+        if(participante.senha !== participante.confirmarSenha){
             response.writeHead(404, {'Content-Type' : 'application/json'})
             response.end(JSON.stringify({message: 'Senhas não correspondem'}));
            return
@@ -58,8 +58,17 @@ const server = http.createServer((request, response) => {
     response.end()
    }
    else if(method === 'GET' && url.startsWith('/participantes/')){
-    console.log(`${method}, ${url} 8`)
-    response.end()
+    const id = parseInt(url.split("/")[2])
+    const encontrarParticipante = participantes.find(
+        (participante) => participante.id === id 
+    );
+    if(!participantes){
+        response.writeHead(404, {'Content-Type' : 'application/json'})
+        response.end(JSON.stringify({message: 'Participante não encontrado.'}));
+        return
+    }
+    response.writeHead(200, {'Content-Type' : 'application/json'})
+    response.end(JSON.stringify(encontrarParticipante));
    }else{ 
     console.log(`${method}, ${url} `)
     response.end()
