@@ -13,7 +13,7 @@
   },
   {
     "nome": "Harry Potter e a Pedra Filosofal",
-    "autor": "J.K Rowling",
+    "autor": "J.K",
     "genero": "Ficção",
     "anoPublicacao": 1997,
     "personagens": [
@@ -58,53 +58,5 @@
       "Hermione Granger"
     ],
     "id": 5
-  },
-  {
-    "nome": "Harry Potter e a Pedra Filosofal",
-    "autor": "J.K Rowling",
-    "genero": "Ficção",
-    "anoPublicacao": 1997,
-    "personagens": [
-      "Harry Potter",
-      "Ronald Weasley",
-      "Hermione Granger"
-    ],
-    "id": 6
-  },
-  {
-    "nome": "Harry Potter e a Pedra Filosofal",
-    "autor": "J.K Rowling",
-    "genero": "Ficção",
-    "anoPublicacao": 1997,
-    "personagens": [
-      "Harry Potter",
-      "Ronald Weasley",
-      "Hermione Granger"
-    ],
-    "id": 7
-  },
-  {
-    "nome": "Harry Potter e a Pedra Filosofal",
-    "autor": "J.K Rowling",
-    "genero": "Ficção",
-    "anoPublicacao": 1997,
-    "personagens": [
-      "Harry Potter",
-      "Ronald Weasley",
-      "Hermione Granger"
-    ],
-    "id": 8
-  },
-  {
-    "nome": "Harry Potter e a Pedra Filosofal",
-    "autor": "J.K Rowling",
-    "genero": "Ficção",
-    "anoPublicacao": 1997,
-    "personagens": [
-      "Harry Potter",
-      "Ronald Weasley",
-      "Hermione Granger"
-    ],
-    "id": 9
   }
 ]
