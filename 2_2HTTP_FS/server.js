@@ -1,4 +1,5 @@
 import nodemon from "nodemon";
+import { URLSearchParams } from "node:url";
 import fs from "node:fs";
 import {createServer} from "node:http"
 import lerDadosFuncionarios from "./lerFuncionarios.js";
@@ -68,9 +69,48 @@ const server = createServer((request, response)=>{
         })    
 
     } else if (method === 'GET' && url.startsWith('/empregados/porFaixaSalarial')){
-        
+        //Query Params = param=valor (https://youtube.com/param)
+       // /empregados/porFaixaSalarial?min=30&max=500
+       const urlParams = new URLSearchParams(url.split('?')[1]) 
+       const minSalario = parseFloat(urlParams.get("min"))
+       const maxSalario = parseFloat(urlParams.get("max"))
+       
+    lerDadosFuncionarios((err, funcionarios)=> {
+        if(err){
+           response.writeHead(500, {'Content-Type': 'application/json'});
+           response.end(JSON.stringify({message: 'Erro interno no servidor.'}));
+        return;
+        }
+    const funcionarioPorFaixaSalarial = funcionarios.filter((funcionario)=>funcionario.salario >= minSalario && funcionario.salario <= maxSalario);
+
+       if(funcionarioPorFaixaSalarial.length === 0){
+           response.writeHead(400, {'Content-Type': 'application/json'});
+           response.end(JSON.stringify({message: 'Não existe funcionário com essa faixa salárial.'}));
+       return;
+       } 
+
+    response.writeHead(200, {'Content-Type':'application/json'});
+    response.end(JSON.stringify(funcionarioPorFaixaSalarial));
+     });
     } else if (method === 'GET' && url.startsWith('/empregados/')){
-        
+       const id = url.split('/')[2]
+       lerDadosFuncionarios((err, funcionarios)=>{
+        if(err){
+                response.writeHead(500, {'Content-Type': 'application/json'});
+                response.end(JSON.stringify({message: 'Erro interno no servidor.'}));
+                return;
+            };
+        const indexFuncionario = funcionarios.findIndex((funcionario)=> funcionario.id === id);
+
+        if(indexFuncionario === -1){
+            response.writeHead(400, {'Content-Type': 'application/json'});
+            response.end(JSON.stringify({message: 'Funcionário não encontrado.'}));
+            return;
+        };
+        const usuarioEncontrado  = funcionarios[indexFuncionario]
+        response.writeHead(200, {'Content-Type': 'application/json'});
+        response.end(JSON.stringify(usuarioEncontrado));
+        }); 
     } else if (method === 'POST' && url === '/empregados/'){
         let body = ''
         request.on('data', (chunk)=>{
@@ -102,9 +142,52 @@ const server = createServer((request, response)=>{
             })
         });
     }else if (method === 'PUT' && url.startsWith('/empregados/')){
-        
+      const id = url.split('/')[2]  
+      let body = ''
+      request.on("data", (chunk) => {
+        body+=chunk;
+      });
+      request.on("end", ()=> {
+        const funcionarioAtualizado = JSON.parse(body)
+        lerDadosFuncionarios((err, funcionarios)=>{
+            if(err){
+                response.writeHead(500, {'Content-Type': 'application/json'});
+                response.end(JSON.stringify({message: 'Erro interno no servidor.'}));
+                return;
+            }
+            const indexFuncionario = funcionarios.findIndex((funcionario)=> funcionario.id === id);//function callback
+
+            if(indexFuncionario === -1){
+                response.writeHead(400, {'Content-Type': 'application/json'});
+                response.end(JSON.stringify({message: 'Funcionário não encontrado.'}));
+                return;
+            }
+            funcionarios[indexFuncionario] = {...funcionarios[indexFuncionario], ...funcionarioAtualizado};
+
+            fs.writeFile('funcionarios.json', JSON.stringify(funcionarios, null, 2), (err)=> {
+                if(err){
+                    response.writeHead(500, {'Content-Type': 'application/json'});
+                    response.end(JSON.stringify({message: 'Erro ao escrever no arquivo.'}));
+                    return;
+                }
+                response.writeHead(200, {'Content-Type': 'application/json'});
+                response.end(JSON.stringify(funcionarioAtualizado));
+            });
+        });      
+      });
     }else if (method === 'DELETE' && url.startsWith('/empregados/')){
-        
+        const id = parseInt(url.split('/')[2]);
+        const indexFuncionario = funcionarios.findIndex(
+            (funcionario) => funcionario.id === id
+        );
+        if (indexFuncionario === - 1) {
+            response.writeHead(404, { 'Content-Type': 'application/json' })
+            response.end(JSON.stringify({ message: "Funcionário selecionado não existe na base de dados." }));
+            return;
+        }
+        funcionarios.splice(indexFuncionario, 1);
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        response.end(JSON.stringify({ message: "Funcionário deletado." }));
     }else{
         response.writeHead(404, {'Content-Type': 'application/json'})
         response.end(JSON.stringify({message: 'Página não encontrada.'}))
