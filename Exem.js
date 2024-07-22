@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 
-// Simulando um banco de dados (você deve usar um banco de dados real)
+//banco de dados
 const pessoas = [];
 
 const server = http.createServer((req, res) => {
@@ -21,9 +21,10 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ error: 'Campos obrigatórios não preenchidos.' }));
           return;
         }
-        // Salva o endereço no banco de dados (você deve implementar a lógica de persistência)
-        // Exemplo: const endereco = { rua, numero, cidade, estado, cep, id_pessoa };
-        // pessoas.push(endereco);
+        // Salva o endereço no banco de dados 
+        
+        const endereco = { rua, numero, cidade, estado, cep, id_pessoa };
+        pessoas.push(endereco);
         res.statusCode = 201;
         res.end('Endereço adicionado com sucesso.');
       });
